@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Display a map</title>
+<meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+<script src="https://canvasjs.com/assets/script/jquery-1.11.1.min.js"></script>
+<script src="https://canvasjs.com/assets/script/jquery.canvasjs.min.js"></script>
+<style>
+	body { margin: 0; padding: 0; }
+	#map { position: absolute; margin:20px; top: 0; bottom: 0; width: 100%; }
+    #info {
+       margin:20px;
+       float:left;
+    }
+    #table{
+        float:right;
+    }
+</style>
+</head>
+<body>
+<div class="container">
+<h2 class="text-center">NDVI Dashboard</h2>
+<div class="col-sm-12">
+    <div id="info" class="col-sm-6"></div>
+    <table id="table" class="table table-bordered col-sm-6">
+    <tr><th scope="col">Min(NDVI)</th><th scope="col">Mean(NDVI)</th><th scope="col">Max(NDVI)</th></tr>
+    </table>
+</div>
+<div id="chartContainer" style="height: 300px; width: 100%;"></div>
+</div>
+<script>
+	// TO MAKE THE MAP APPEAR YOU MUST
+	// ADD YOUR ACCESS TOKEN FROM
+	// https://account.mapbox.com
+// mapboxgl.accessToken = 'pk.eyJ1IjoiYWthbnNoYWdpbnphIiwiYSI6ImNrZ2MxYm9nNzA5eHMycXBtbXV1cDR0ZDQifQ.R7clAe-Ez5tGCLj0LRHNhg';
+// var map = new mapboxgl.Map({
+// container: 'map', // container id
+// style: 'mapbox://styles/mapbox/streets-v9', // style URL
+// center: [-74.5, 40], // starting position [lng, lat]
+// zoom: 9 // starting zoom
+//});
+
+
+
+function append_json1(data1){
+    for(i=0;i<1;i++) {
+       // console.log(data1);
+       var info = document.getElementById('info');
+       var ndvi_img = document.createElement('img'); 
+       var true_img = document.createElement('img'); 
+       var false_img = document.createElement('img'); 
+       var evi_img = document.createElement('img'); 
+       ndvi_img.src = data1[i].image.ndvi;
+       true_img.src = data1[i].image.truecolor;
+       false_img.src = data1[i].image.falsecolor;
+       evi_img.src =  data1[i].image.evi;
+       ndvi_img.height = "200";
+       ndvi_img.width= "200";
+       true_img.height = "200";
+       true_img.width= "200";
+       false_img.height = "200";
+       false_img.width= "200";
+       evi_img.height = "200";
+       evi_img.width= "200";
+       var tile = document.createElement('img'); 
+       tile.src = data1[i].data.ndvi;
+       info.append(
+    //    '<li>' + object.stats + '</li>' +
+    //     '<li>' + object.data.ndvi + '</li>' +
+    //     '<li>' + object.tile.ndvi + '</li>' +
+    //     '<li>' + object.image + '</li>')
+    true_img, false_img, ndvi_img ,evi_img)
+}
+}
+function getTiff() {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+         if (this.readyState == 4 && this.status == 200) {
+             //alert(this.responseText);
+             var data1 = JSON.parse(this.responseText);
+             console.log(data1);
+             append_json1(data1);
+         }
+
+    };
+    xhttp.open("GET", "http://api.agromonitoring.com/agro/1.0/image/search?start=1500336000&end=1508976000&polyid=5f8c326bf936d5000742a6a2&appid=66bcff8aef9312a104f9b1224c0c7dad", true);
+    xhttp.setRequestHeader("Content-type", "application/json");
+    xhttp.send("data1");
+}
+
+function downloadTiff(){
+	var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+         if (this.readyState == 4 && this.status == 200) {
+             //alert(this.responseText);
+             let data = this.responseText;  
+             console.log(data);
+         }
+    };
+    xhttp.open("GET", "http://api.agromonitoring.com/data/1.0/02259768a00/5ac22f004b1ae4000b5b97cf?appid=66bcff8aef9312a104f9b1224c0c7dad", true);
+    xhttp.setRequestHeader("Content-type", "application/json");
+    //xhttp.send("data");
+}
+function append_json2(data2){
+    for(i=0;i<data2.length;i++) {
+       var ndvi_table = document.getElementById('table');
+       var tr = document.createElement('tr');
+       tr.innerHTML = '<td>'+data2[i].data.min+'</td>'+data2[i].data.mean+'<td>'+data2[i].data.max+'</td>';
+       ndvi_table.append(tr);
+}
+}
+function getNDVI(){
+	var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+         if (this.readyState == 4 && this.status == 200) {
+             //alert(this.responseText);
+             let data2 = JSON.parse(this.responseText);
+             append_json2(data2);
+             console.log(data2);
+         }
+    };
+    xhttp.open("GET", "http://api.agromonitoring.com/agro/1.0/ndvi/history?start=1597046571&end=1602316971&polyid=5f8c326bf936d5000742a6a2&appid=66bcff8aef9312a104f9b1224c0c7dad", true);
+    xhttp.setRequestHeader("Content-type", "application/json");
+    xhttp.send("data2");
+}
+
+var dataPoints = [];
+var dataPoints1 = [];
+var dataPoints2 = [];
+
+var options =  {
+	animationEnabled: true,
+	theme: "light2",
+	title: {
+		text: "Daily NDVI Data"
+	},
+	axisX: {
+		valueFormatString: "DD MMM YYYY",
+	},
+	axisY: {
+		title: "NDVI Index",
+		titleFontSize: 24
+	},
+	data: [{
+		type: "spline", 
+		yValueFormatString: ".##",
+		dataPoints: dataPoints
+	},
+    {
+        type: "spline",
+        yValueFormatString: ".##",
+		dataPoints: dataPoints1
+    },
+    {
+        type: "spline",
+        yValueFormatString: ".##",
+		dataPoints: dataPoints2
+    }]
+
+};
+getNDVI();
+function addData(data) {
+	for (var i = 0; i < data.length; i++) {
+        console.log(data[i].dt);
+		dataPoints.push({
+			x: new Date(data[i].dt),
+			y: data[i].data.max
+		});
+        dataPoints1.push({
+			x: new Date(data[i].dt),
+			y: data[i].data.min
+		});
+        dataPoints2.push({
+			x: new Date(data[i].dt),
+			y: data[i].data.mean
+		});
+	}
+	$("#chartContainer").CanvasJSChart(options);
+}
+$.getJSON("http://api.agromonitoring.com/agro/1.0/ndvi/history?start=1597046571&end=1602316971&polyid=5f8c326bf936d5000742a6a2&appid=66bcff8aef9312a104f9b1224c0c7dad", addData);
+
+getTiff();
+downloadTiff();
+
+</script>
+ 
+</body>
+</html>
