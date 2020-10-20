@@ -114,7 +114,7 @@ function append_json2(data2){
     for(i=0;i<data2.length;i++){
        var ndvi_table = document.getElementById('table');
        var tr = document.createElement('tr');
-       tr.innerHTML = '<td>'+data2[i].data.min+'</td>'+data2[i].data.mean+'<td>'+data2[i].data.max+'</td>';
+       tr.innerHTML = '<td>'+data2[i].data.min+'</td>'+'<td>'+data2[i].data.mean+'</td>'+'<td>'+data2[i].data.max+'</td>';
        ndvi_table.append(tr);
 }
 }
@@ -138,9 +138,9 @@ function getForecast(){
 	var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
          if (this.readyState == 4 && this.status == 200) {
-             alert(this.responseText);
+             //alert(this.responseText);
              let forecast_data = JSON.parse(this.responseText);
-             console.log(forecast_data);
+            // console.log(forecast_data);
          }
     };
     xhttp.open("GET", "http://api.agromonitoring.com/agro/1.0/weather/forecast?polyid=5f8c326bf936d5000742a6a2&appid=66bcff8aef9312a104f9b1224c0c7dad", true);
