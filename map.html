@@ -3,13 +3,28 @@
 <head>
 <meta charset="utf-8" />
 <title>Display a map</title>
-<meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="stylesheet" href="css/leaflet.css">
+<link rel="stylesheet" href="css/qgis2web.css"><link rel="stylesheet" href="css/fontawesome-all.min.css">
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 <script src="https://canvasjs.com/assets/script/jquery-1.11.1.min.js"></script>
 <script src="https://canvasjs.com/assets/script/jquery.canvasjs.min.js"></script>
+<script src="js/qgis2web_expressions.js"></script>
+<script src="js/leaflet.js"></script>
+<script src="js/leaflet.rotatedMarker.js"></script>
+<script src="js/leaflet.pattern.js"></script>
+<script src="js/leaflet-hash.js"></script>
+<script src="js/Autolinker.min.js"></script>
+<script src="js/rbush.min.js"></script>
+<script src="js/labelgun.min.js"></script>
+<script src="js/labels.js"></script>
 <style>
 	body { margin: 0; padding: 0; }
 	#map { position: absolute; margin:20px; top: 0; bottom: 0; width: 100%; }
@@ -17,25 +32,38 @@
        margin:0px;
        float:left;
     }
-    #table{
+    #table {
         float:left;
+    }
+    #map {
+        width: 500px;
+        height: 417px;
+    }
+    #chart {
+        float:right;
     }
 </style>
 </head>
 <body>
 <div class="container">
 <h2 class="text-center">NDVI Dashboard</h2>
-<div class="row">
-    <div id="info" class="col-sm-6"></div>
-<div class="col-sm-6">
+<div class="row col-sm-12">
+<div class="col-sm-7">
+    NDVI: <input type="checkbox" id="check" name="check" value="check"/> 
+    RGB: <input type="checkbox" id="check1" name="check" value="check"/>
+    <div id="map"></div>
+</div>
+<div id="chart" class="col-sm-5">
     <div id="chartContainer" style="height: 300px; width: 100%;"></div>
     <div id="forecastContainer" class="" style="height: 300px; width: 100%;"></div>
-</div>
-<table id="table" class="table table-bordered">
-    <h2>NDVI Index Data</h2>
-    <tr><th scope="col">Min(NDVI)</th><th scope="col">Mean(NDVI)</th><th scope="col">Max(NDVI)</th></tr>
+</div>  
+</div> 
+<div class="row">
+    <table id="table" class="table table-bordered">
+        <h2>NDVI Index Data</h2>
+        <tr><th scope="col">Min(NDVI)</th><th scope="col">Mean(NDVI)</th><th scope="col">Max(NDVI)</th></tr>
     </table>
-</div>
+</div>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
 </div>
 <script>
 	// TO MAKE THE MAP APPEAR YOU MUST
@@ -79,6 +107,26 @@ function append_json1(data1){
     true_img, false_img, ndvi_img ,evi_img)
 }
 }
+
+// function getPolygon(){
+//     var xhttp = new XMLHttpRequest();
+//     xhttp.onreadystatechange = function() {
+//          if (this.readyState == 4 && this.status == 200) {
+//              //alert(this.responseText);
+//          var map = L.map('map', {
+//             zoomControl:true, maxZoom:18, minZoom:1
+//          });
+//             var myGeoJson = JSON.parse(this.responseText);
+//             console.log(myGeoJson);
+//             // append_json1(myGeoJson);
+//             var geojsonLayer = L.geoJson(myGeoJson);
+//             geojsonLayer.addTo(map);
+//          }
+//     };
+//     xhttp.open("GET", "http://api.agromonitoring.com/agro/1.0/polygons?appid=66bcff8aef9312a104f9b1224c0c7dad", true);
+//     xhttp.setRequestHeader("Content-type", "application/json");
+//     xhttp.send("myGeoJson"); 
+// }
 
 function getTiff() {
     var xhttp = new XMLHttpRequest();
@@ -237,7 +285,7 @@ $.getJSON("http://api.agromonitoring.com/agro/1.0/ndvi/history?start=1597046571&
 
 var forecastdataPoints = [];
 var forecastdataPoints1 = [];
-var forecastdataPoints2 = [];
+var forecastdataPoints2 = []; 
 
 var options1 = {
 	animationEnabled: true,
@@ -319,9 +367,48 @@ var convdataTime = month+'-'+day+'-'+year+' '+hours + ':' + minutes.substr(-2) +
 	$("#forecastContainer").CanvasJSChart(options1);
 }
 $.getJSON("http://api.agromonitoring.com/agro/1.0/weather/forecast?start=1597046571&end=1602316971&polyid=5f8c326bf936d5000742a6a2&appid=66bcff8aef9312a104f9b1224c0c7dad", addForecastData);
+//getPolygon();
 getTiff();
 downloadTiff();
-
+var map = L.map('map', {
+            zoomControl:true, maxZoom:28, minZoom:1
+        }).fitBounds([[35.56705880163952,140.27711141958275],[35.567859517790176,140.27896066823644]]);
+        var hash = new L.Hash(map);
+        map.attributionControl.setPrefix('<a href="https://github.com/tomchadwin/qgis2web" target="_blank">qgis2web</a> &middot; <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a> &middot; <a href="https://qgis.org">QGIS</a>');
+        var autolinker = new Autolinker({truncate: {length: 30, location: 'smart'}});
+        var bounds_group = new L.featureGroup([]);
+        function setBounds() {
+        }
+        map.createPane('pane_20201002_ac_36m_RGB_0');
+        map.getPane('pane_20201002_ac_36m_RGB_0').style.zIndex = 400;
+        var img_20201002_ac_36m_RGB_0 = 'data/20201002_ac_36m_RGB_0.png';
+        var img_bounds_20201002_ac_36m_RGB_0 = [[35.56716905413633,140.27732736188],[35.567749267579295,140.27874474206183]];
+        var layer_20201002_ac_36m_RGB_0 = new L.imageOverlay(img_20201002_ac_36m_RGB_0,
+                                              img_bounds_20201002_ac_36m_RGB_0,
+                                              {pane: 'pane_20201002_ac_36m_RGB_0'});
+        bounds_group.addLayer(layer_20201002_ac_36m_RGB_0);
+        document.querySelector("#check1").addEventListener('change', function() {
+        if(this.checked) map.addLayer(layer_20201002_ac_36m_RGB_0);
+        else map.removeLayer(layer_20201002_ac_36m_RGB_0);
+        })
+        map.createPane('pane_20201002_ac_36m_NDVI_1');
+        map.getPane('pane_20201002_ac_36m_NDVI_1').style.zIndex = 401;
+        var img_20201002_ac_36m_NDVI_1 = 'data/20201002_ac_36m_NDVI_1.png';
+        var img_bounds_20201002_ac_36m_NDVI_1 = [[35.567167990519,140.2773155009406],[35.56774991866711,140.27872269869812]];
+        var layer_20201002_ac_36m_NDVI_1 = new L.imageOverlay(img_20201002_ac_36m_NDVI_1,
+                                              img_bounds_20201002_ac_36m_NDVI_1,
+                                              {pane: 'pane_20201002_ac_36m_NDVI_1'});
+        bounds_group.addLayer(layer_20201002_ac_36m_NDVI_1);
+        document.querySelector("#check").addEventListener('change', function() {
+        if(this.checked) map.addLayer(layer_20201002_ac_36m_NDVI_1);
+        else map.removeLayer(layer_20201002_ac_36m_NDVI_1);
+        })
+        setBounds();
+        L.ImageOverlay.include({
+            getBounds: function () {
+                return this._bounds;
+            }
+        });
 </script>
 </body>
 </html>
