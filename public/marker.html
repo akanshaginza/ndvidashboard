@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <link rel="stylesheet" href="css/leaflet.css">
+        <link rel="stylesheet" href="css/qgis2web.css"><link rel="stylesheet" href="css/fontawesome-all.min.css">
+		<!-- <link -->
+          <!-- rel="stylesheet" -->
+          <!-- type="text/css" -->
+          <!-- href="http://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/0.4.0/MarkerCluster.css" -->
+        <!-- /> -->
+        <!-- <link -->
+          <!-- rel="stylesheet" -->
+          <!-- type="text/css" -->
+          <!-- href="http://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/0.4.0/MarkerCluster.Default.css" -->
+        <!-- /> -->
+    <link rel="stylesheet" href="http://leaflet.github.io/Leaflet.markercluster/dist/MarkerCluster.css">
+    <link rel="stylesheet" href="http://leaflet.github.io/Leaflet.markercluster/dist/MarkerCluster.Default.css">
+        <style>
+        #map {
+            width: 1245px;
+            height: 788px;
+        }
+        ul{
+           margin-top:40px;
+        }
+        </style>
+        <title></title>
+    </head>
+    <body>
+        <div id="map">
+          <ul>
+         <li>
+              <div>
+              <input type="checkbox" onclick="showAllData()" checked/>All data
+              </div>
+          </li> 
+          <li>
+            <div>
+            <input type="checkbox" onclick="Co2()">Co2
+            </div>
+            </li>
+            <li>
+              <div>
+              <input type="checkbox" onclick="Temperature()">Temperature
+              </div>
+              </li>
+              <li>
+             <div>
+                <input type="checkbox" onclick="Humidity()">Humidity
+            </div>
+            </li>
+            <li>
+            <div>
+              <input type="checkbox" onclick="GPSCoordinates()">GPSCoordinates
+            </div>
+            </li>
+          </ul>
+        </div>
+        <script src="js/qgis2web_expressions.js"></script>
+        <script src="js/leaflet.js"></script>
+        <script src="js/leaflet.rotatedMarker.js"></script>
+        <script src="js/leaflet.pattern.js"></script>
+        <script src="js/leaflet-hash.js"></script>
+        <script src="js/Autolinker.min.js"></script>
+        <script src="js/rbush.min.js"></script>
+        <script src="js/labelgun.min.js"></script>
+        <script src="js/labels.js"></script>
+        <!-- <script src="data/Gpsdata_3.js"></script> -->
+		<script src="http://leaflet.github.io/Leaflet.markercluster/dist/leaflet.markercluster-src.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://npmcdn.com/csv2geojson@latest/csv2geojson.js"></script>
+		<!-- <script -->
+          <!-- type="text/javascript" -->
+          <!-- src="http://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/0.4.0/leaflet.markercluster.js" -->
+        <!-- ></script> -->
+        <script>
+        var map = L.map('map', {
+            zoomControl:true, maxZoom:28, minZoom:1
+        }).fitBounds([[35.567026701989114,140.27720353689637],[35.5679156773513,140.27891232570573]]);
+        var hash = new L.Hash(map);
+        map.attributionControl.setPrefix('<a href="https://github.com/tomchadwin/qgis2web" target="_blank">qgis2web</a> &middot; <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a> &middot; <a href="https://qgis.org">QGIS</a>');
+        var autolinker = new Autolinker({truncate: {length: 30, location: 'smart'}});
+        var bounds_group = new L.featureGroup([]);
+        function setBounds() {
+        }
+        map.createPane('pane_satellite_0');
+        map.getPane('pane_satellite_0').style.zIndex = 400;
+        var layer_satellite_0 = L.tileLayer('https://api.maptiler.com/tiles/satellite/{z}/{x}/{y}.jpg?key=ez8sQloieXkxdHP7mU1S', {
+            pane: 'pane_satellite_0',
+            opacity: 1.0,
+            attribution: '<a href=""><a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a></a>',
+            minZoom: 1,
+            maxZoom: 28,
+            minNativeZoom: 0,
+            maxNativeZoom: 20
+        });
+        layer_satellite_0;
+        //map.addLayer(layer_satellite_0);
+        map.createPane('pane_20200910__18m_RGB_2');
+        map.getPane('pane_20200910__18m_RGB_2').style.zIndex = 402;
+        var img_20200910__18m_RGB_2 = 'data/20200910__18m_RGB_2.png';
+        var img_bounds_20200910__18m_RGB_2 = [[35.56719688382802,140.27740233239558],[35.56774549741868,140.27871354683825]];
+        var layer_20200910__18m_RGB_2 = new L.imageOverlay(img_20200910__18m_RGB_2,
+                                              img_bounds_20200910__18m_RGB_2,
+                                              {pane: 'pane_20200910__18m_RGB_2'});
+        bounds_group.addLayer(layer_20200910__18m_RGB_2);
+        map.addLayer(layer_20200910__18m_RGB_2);
+        var myIcon = L.icon({
+         iconUrl: 'css/images/marker-icon.png',
+         iconSize: [38, 55]  // アイコンサイズ
+        });
+		// map.on('click', function(e){
+    //     var coord = e.latlng;
+    //     var lat = coord.lat;
+    //     var lng = coord.lng;
+		// var co2 = "25";
+		// var temperature = "30";
+    //   var clickedPoint = L.marker([lat,lng],{
+    //         icon: myIcon,
+    //         markerColor: 'darkblue'
+	  //   }).addTo(map);
+	  //   clickedPoint.bindPopup(lat+','+lng+','+co2+','+temperature);
+    // });
+
+var blackIcon= L.icon({
+  iconURL: 'http://leaflet.js.com/docs/images/leaf-red.png',
+  iconSize: [64,74],
+  iconAnchor: [32,74],
+  popupAnchor: [0,-50]
+});
+
+var myGeoJson =
+{
+"type": "FeatureCollection",
+"name": "marker",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "Latitude": 140.27775, "Longitude": 35.56744, "Co2": 400, "Temperature": 25.16, "Humidity": 70.8 }, "geometry": { "type": "Point", "coordinates": [ 140.27775 ,35.56744  ] } },
+{ "type": "Feature", "properties": { "Latitude": 140.27801, "Longitude": 35.56753, "Co2": 406, "Temperature": 26.19, "Humidity": 71.2 }, "geometry": { "type": "Point", "coordinates": [ 140.27801, 35.56753  ] } },
+{ "type": "Feature", "properties": { "Latitude": 140.27776, "Longitude": 35.5676, "Co2": 410, "Temperature": 25.6, "Humidity": 70.2 }, "geometry": { "type": "Point", "coordinates": [ 140.27776, 35.5676  ] } },
+{ "type": "Feature", "properties": { "Latitude": 140.27821, "Longitude": 35.56756, "Co2": 402, "Temperature": 27.02, "Humidity": 72.0 }, "geometry": { "type": "Point", "coordinates": [ 140.27821, 35.56756] } },
+{ "type": "Feature", "properties": { "Latitude": 140.27865, "Longitude": 35.56744, "Co2": 401, "Temperature": 26.02, "Humidity": 71.0 }, "geometry": { "type": "Point", "coordinates": [ 140.27865, 35.56744  ] } },
+{ "type": "Feature", "properties": { "Latitude": 140.27821, "Longitude": 35.56741, "Co2": 403, "Temperature": 24.02, "Humidity": 70.0 }, "geometry": { "type": "Point", "coordinates": [ 140.27821 ,35.56741] } }
+]
+}
+
+var allData = L.geoJson(myGeoJson, {
+  style: function(feature){
+    return {
+      color: '#000',
+      weight : '0.5'
+    }
+  },
+  pointToLayer: function(geoJsonPoint, latlng){
+    return L.marker(latlng, {
+        icon : myIcon
+      });
+    },
+    onEachFeature: function(feature, layer){ 
+      layer.bindPopup('<p>Latitude:'+feature.properties.Latitude+'</p><p>Longitude: '+feature.properties.Longitude+'</p><p>Co2: '+feature.properties.Co2+'</p><p>Temperature: '+feature.properties.Temperature+'</p><p>Humidity: '+feature.properties.Humidity+'</p>');
+    } 
+}).addTo(map);
+function showAllData(){
+  map.addLayer(allData);
+}
+
+function Co2(){
+  map.removeLayer(allData);
+  L.geoJson(myGeoJson, {
+    onEachFeature: function(feature, layer){ 
+      layer.bindPopup('<p>Co2: '+feature.properties.Co2+'</p>');
+    } 
+  }).addTo(map);
+}
+
+function Temperature(){
+  map.removeLayer(allData);
+  L.geoJson(myGeoJson, {
+    onEachFeature: function(feature, layer){ 
+      layer.bindPopup('<p>Temperature: '+feature.properties.Temperature+'</p>');
+    } 
+  }).addTo(map);
+}
+
+function Humidity(){
+  map.removeLayer(allData);
+  L.geoJson(myGeoJson, {
+    onEachFeature: function(feature, layer){ 
+      layer.bindPopup('<p>Humidity: '+feature.properties.Humidity+'</p>');
+    } 
+  }).addTo(map);
+}
+
+function GPSCoordinates(){
+  map.removeLayer(allData);
+  L.geoJson(myGeoJson, {
+    onEachFeature: function(feature, layer){ 
+      layer.bindPopup('<p>Coords: '+feature.properties.Latitude+','+feature.properties.Longitude+'</p>');
+    } 
+  }).addTo(map);
+}
+
+
+</script>
+</body>
+</html>

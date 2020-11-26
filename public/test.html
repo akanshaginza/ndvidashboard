@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <link rel="stylesheet" href="css/leaflet.css">
+        <link rel="stylesheet" href="css/qgis2web.css"><link rel="stylesheet" href="css/fontawesome-all.min.css">
+        <style>
+        #map {
+            width: 1245px;
+            height: 788px;
+            /* left: 25%; */
+        }
+        .overlay {
+            position:fixed;
+            top:25%;
+            left: 5%;
+            background-color: #073856;
+            padding: 20px;
+            border-radius: 5px;
+        }
+        .overlay label {
+            color: white;
+            margin:5px 0px;
+            display: inline-block;
+            font-family:'Open Sans', sans-serif;
+            font-size: 14px;
+        }
+        </style>
+        <title></title>
+    </head>
+    <body>
+<div id="map"></div>
+
+<p>
+Test checkbox
+</p>
+<input type="checkbox" /><span>Co2 Heatmap</span>
+<span>Temp Heatmap</span><span>Humidity Heatmap</span>
+<br />
+<input type="checkbox" id="test" /><label for="test">Items</label>
+<input type="checkbox" id="test" /><label for="test">Heatmap</label>
+<script src="js/qgis2web_expressions.js"></script>
+<script src="js/leaflet.js"></script>
+<script src="js/leaflet-heat.js"></script>
+<script src="js/leaflet.rotatedMarker.js"></script>
+<script src="js/leaflet.pattern.js"></script>
+<script src="js/leaflet-hash.js"></script>
+<script src="js/Autolinker.min.js"></script>
+<script src="js/rbush.min.js"></script>
+<script src="js/labelgun.min.js"></script>
+<script src="js/labels.js"></script>
+<script src="data/data_1_1.js"></script>
+<script>
+L.Control.Layers.include({
+	_addItem: function (obj) {
+		var label = document.createElement('label'),
+		    checked = this._map.hasLayer(obj.layer),
+		    input;
+
+		if (obj.overlay) {
+			input = document.createElement('input');
+			input.type = 'checkbox';
+			input.className = 'leaflet-control-layers-selector';
+			input.defaultChecked = checked;
+        } 
+        else {
+			input = this._createRadioElement('leaflet-base-layers', checked);
+		}
+
+		input.layerId = L.stamp(obj.layer);
+        // Create an explicit ID so that we can associate a <label> to the <input>.
+        var id = input.id = 'leaflet-layers-control-layer-' + input.layerId;
+
+		L.DomEvent.on(input, 'click', this._onInputClick, this);
+
+		// Use a <label> instead of a <span> and associate it to the <input>.
+		var name = document.createElement('label');
+		name.innerHTML = ' ' + obj.name;
+        name.setAttribute('for', id);
+
+		// Helps from preventing layer control flicker when checkboxes are disabled
+		// https://github.com/Leaflet/Leaflet/issues/2771
+		var holder = document.createElement('div');
+
+		label.appendChild(holder);
+		holder.appendChild(input);
+		holder.appendChild(name);
+
+		var container = obj.overlay ? this._overlaysList : this._baseLayersList;
+		container.appendChild(label);
+
+		this._checkDisabledLayers();
+        return label;
+        
+        
+document.querySelector("#id").on('click', function(e) { 
+        alert(e.latlng);
+    var id = event.currentTarget.layerId;
+    var layer = this._layers[id];
+    map.createPane('pane_data_1_1');
+        map.getPane('pane_data_1_1').style.zIndex = 401;
+        map.getPane('pane_data_1_1').style['mix-blend-mode'] = 'normal';
+        var data_1_1_hm = geoJson2heat(json_data_1_1,
+                                      '');
+        var layer_data_1_1 = new L.heatLayer(data_1_1_hm, {
+            attribution: '',
+            interactive: true,
+            radius: 30,
+            max: 1,
+            minOpacity: 1,
+            gradient: {0: '#d73027', 0.1429: '#fc8d59', 0.2857: '#fee08b', 0.4286: '#ffffbf', 0.5714: '#d9ef8b', 0.7143: '#91cf60', 0.8571: '#1a9850', 1: '#1a9850'}});
+           // bounds_group.addLayer(layer_data_1_1);
+           var addlyr = map.addLayer(layer_data_1_1);
+           addlyr.addTo(tempHeatmap);
+          //setBounds();
+          function geoJson2heat(geojson, weight) {
+           return geojson.features.map(function(feature) {
+            return [
+              feature.geometry.coordinates[1],
+              feature.geometry.coordinates[0],
+              feature.properties[weight]
+            ];
+          });
+        }
+});
+}
+});
+
+var map = L.map("map");
+L.tileLayer("http://{s}.tile.osm.org/{z}/{x}/{y}.png").addTo(map);
+
+map.fitBounds([[36.12095829069404,139.21594348820798],[36.121086024378215,139.21619355978845]]);
+var bounds_group = new L.featureGroup([]);
+var Co2heatmap = new L.LayerGroup();
+var tempHeatmap = new L.LayerGroup();
+var humidityHeatmap = new L.LayerGroup();
+
+for (var i = 0; i < 50; i += 1) {
+	L.marker(getRandomLatLng()).addTo(tempHeatmap);
+}
+
+var overlays = {
+    Items: Co2heatmap,tempHeatmap,humidityHeatmap
+};
+
+L.control.layers(null, overlays, {
+	collapsed: false
+}).addTo(map);
+
+function getRandomLatLng() {
+	return [
+    139.21594348820798 + 0.1 * Math.random(),
+    36.12095829069404 + 0.2 * Math.random()
+  ];
+}
+
+
+</script>
+</body>
+</html>

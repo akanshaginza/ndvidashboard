@@ -1,0 +1,1131 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+            <!-- Bootstrap CSS -->
+       <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+       <!--Google Icon Font-->
+       <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!-- Our Custom CSS -->
+    <link rel="stylesheet" href="css/style2.css">
+    <!-- Scrollbar Custom CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/malihu-custom-scrollbar-plugin/3.1.5/jquery.mCustomScrollbar.min.css">
+
+    <!-- Font Awesome JS -->
+    <script defer src="https://use.fontawesome.com/releases/v5.0.13/js/solid.js" integrity="sha384-tzzSw1/Vo+0N5UhStP3bvwWPq+uvzCMfrN1fEFe+xBmv1C/AtVX5K0uZtmcHitFZ" crossorigin="anonymous"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.0.13/js/fontawesome.js" integrity="sha384-6OIrr52G08NpOFSZdxxz1xdNSndlD4vdcf/q2myIUVO0VsqaGHJsB0RaBE01VTOY" crossorigin="anonymous"></script>
+
+       <link rel="stylesheet" href="css/leaflet.css">
+       <link rel="stylesheet" href="css/qgis2web.css"><link rel="stylesheet" href="css/fontawesome-all.min.css">
+            <!-- jQuery first, then Popper.js, then Bootstrap JS, then Propeller js -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+	      
+        <script src="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.js"></script>
+        <script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
+        <link href="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css" rel="stylesheet" />
+        <style>
+        #map {
+            width: 500px;
+            height: 450px;
+            left: 6%; 
+            display:inline-block;
+        }
+        #map1{
+          display:block;
+          width: 800px;
+          height: 500px;
+        }
+        .overlay {
+            position:absolute;
+            top:23%;
+            left: 8%;
+            background-color: #073856;
+            padding: 20px;
+            border-radius: 5px;
+            z-index:999;
+        }
+        .overlay label {
+            color: white;
+            margin: 5px 0px;
+            display: inline-block;
+            font-family:'Open Sans', sans-serif;
+            font-size: 14px;
+        }
+        #myDiv {
+            height: 450px;
+            width: 500px;
+            margin: 3%;
+            float: right;
+            display: inline-block;
+        }
+        #myDiv1 {
+            height: 450px;
+            width: 500px;
+            margin: 3%;
+            float: right;
+            display: inline-block;
+        }
+        #myDiv2 {
+            height: 450px;
+            width: 500px;
+            margin: 3%;
+            float: right;
+            display: inline-block;
+        }
+        #myDiv3 {
+            height: 450px;
+            width: 500px;
+            margin: 3%;
+            float: right;
+            display: inline-block;
+        }
+        h2{
+          text-align: center;
+        }
+        #img{
+          display: inline-block;
+          margin-left: 0;
+          height: 450px;
+          width:500px;
+          overflow-y: scroll;
+        }
+        #img img{
+          height: 200px;
+          width: 200px;
+          float: right;
+          object-fit: cover;
+        }
+        </style>
+        <title></title>
+    </head>
+    <body>
+      <div class="wrapper">
+        <!-- Sidebar  -->
+        <nav id="sidebar">
+            <div class="sidebar-header">
+                <h3>Menu</h3>
+            </div>
+            <ul class="list-unstyled components">
+                <p>Data analysis</p>
+                <li class="active">
+                    <a href="#homeSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Sensor data</a>
+                    <ul class="collapse list-unstyled" id="homeSubmenu">
+                        <li>
+                            <a href="#" id="co2">CO2</a>
+                        </li>
+                        <li>
+                            <a href="#" id="temp">Temperature</a>
+                        </li>
+                        <li>
+                            <a href="#" id="humidity">Humidity</a>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#" id="qty">Quantity</a>
+                </li>
+                <p>Trend</p>
+                <li>
+                    <a href="#pageSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Weekly data</a>
+                    <ul class="collapse list-unstyled" id="pageSubmenu">
+                        <li>
+                            <a href="#" id="week1">Week 1</a>
+                        </li>
+                        <li>
+                            <a href="#" id="week2">Week 2</a>
+                        </li>
+                        <li>
+                            <a href="#" id="week3">Week 3</a>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                  <a href="#pageSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Monthly data</a>
+                  <ul class="collapse list-unstyled" id="pageSubmenu">
+                      <li>
+                          <a href="#" id="month1">All months</a>
+                      </li>
+                  </ul>
+              </li>
+                <li>
+                    <a href="#">Portfolio</a>
+                </li>
+                <li>
+                    <a href="#">Contact</a>
+                </li>
+            </ul>
+
+            <ul class="list-unstyled CTAs">
+                <li>
+                    <a href="https://bootstrapious.com/tutorial/files/sidebar.zip" class="download">Download CSV</a>
+                </li>
+                <li>
+                    <a href="https://bootstrapious.com/p/bootstrap-sidebar" class="article">Back to homepage</a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Page Content  -->
+        <div id="content">
+<!-- 
+            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                <div class="container-fluid">
+
+                    <button type="button" id="sidebarCollapse" class="btn btn-info">
+                        <i class="fas fa-align-left"></i>
+                        <span>Toggle</span>
+                    </button>
+                    <button class="btn btn-dark d-inline-block d-lg-none ml-auto" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                        <i class="fas fa-align-justify"></i>
+                    </button>
+
+                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                        <ul class="nav navbar-nav ml-auto">
+                            <li class="nav-item active">
+                                <a class="nav-link" href="#">Forecast data</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#">Predictive analysis</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#">Soil analysis</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </nav> -->
+      <h2>Smart Agri Analysis</h2>
+        <!-- <div class="overlay zindex">
+            <input type="checkbox" id="check1" onclick="change();">
+            <label>CO2 Heatmap</label>
+            <br>
+            <input type="checkbox" id="check2" onclick="change1();">
+            <label>Temp Heatmap</label>
+            <br>
+            <input type="checkbox" id="check3" onclick="change2();">
+            <label>Humidity Heatmap</label>
+            <br>
+            <input type="checkbox" id="check4" onclick="change3();">
+            <label>Quantity Heatmap</label>
+        </div> -->
+        <div id="map1"></div>
+        <div id="myDiv"> 
+        </div>
+        <div id="myDiv1"> 
+        </div>
+        <div id="myDiv2"> 
+        </div>
+        <div id="myDiv3"> 
+        </div>
+        <div id="img"></div>
+        <script src="js/qgis2web_expressions.js"></script>
+        <script src="js/leaflet.js"></script>
+        <script src="js/leaflet-heat.js"></script>
+        <script src="js/leaflet.rotatedMarker.js"></script>
+        <script src="js/leaflet.pattern.js"></script>
+        <script src="js/leaflet-hash.js"></script>
+        <script src="js/Autolinker.min.js"></script>
+        <script src="js/rbush.min.js"></script>
+        <script src="js/labelgun.min.js"></script>
+        <script src="js/labels.js"></script>
+        <script src="data/data_1_1.js"></script>
+        <script>
+        $(document).ready(function () {
+           $("#sidebar").mCustomScrollbar({
+                theme: "minimal"
+            });
+
+            $('#sidebarCollapse').on('click', function () {
+                $('#sidebar, #content').toggleClass('active');
+                $('.collapse.in').toggleClass('in');
+                $('a[aria-expanded=true]').attr('aria-expanded', 'false');
+            });
+        });
+        var img =['css/images/1.jpg','css/images/2.jpg','css/images/3.jpg','css/images/4.jpg','css/images/5.jpg','css/images/6.jpg','css/images/7.jpg','css//images/8.jpg',
+        'css/images/9.jpg','css/images/10.jpg','css/images/11.jpg','css/images/12.jpg','css/images/13.jpg','css/images/14.jpg'];
+        Plotly.d3.csv("data/detected_data.csv", function(data){ processData(data) } );
+        Plotly.d3.csv("data/detected_data1.csv", function(data){ processData1(data) } );
+        Plotly.d3.csv("data/detected_data2.csv", function(data){ processData2(data) } );
+        Plotly.d3.csv("data/detected_data3.csv", function(data){ processData3(data) } );
+        Plotly.d3.csv("data/detected_data4.csv", function(data){ processData4(data) } );
+
+function processData(allRows){
+  console.log(allRows);
+  var id = [], timestamp = [], temp=[], humidity=[], lat=[], lon=[], co2=[], quantity=[], images=[];
+  for (var i=0; i<allRows.length; i++) {
+    row = allRows[i];
+    id.push( row['id'] );
+    timestamp.push( row['timestamp'] );
+    temp.push( row['temp'] ); 
+    humidity.push( row['humidity'] );
+    lat.push( row['lat'] );
+    lon.push( row['lon'] );
+    co2.push( row['co2'] );
+    quantity.push( row['quantity'] );
+  }
+  console.log( 'X',timestamp, 'Y',co2 );
+  $('#temp').click(function(){
+    $('#myDiv1,#myDiv2,#myDiv3').hide();
+    $('#myDiv').show();
+    makePlotly(temp,timestamp);
+    makeHeatmap(lat,lon,temp);
+  });
+  $('#humidity').click(function(){
+    $('#myDiv,#myDiv2,#myDiv3').hide();
+    $('#myDiv1').show();
+    makePlotly1(humidity,timestamp);
+    makeHeatmap2(lat,lon,humidity);
+  });
+    //makePlotly3(quantity,timestamp);
+    //makePlotly2(co2,timestamp);
+  $('#co2').click(function(){
+    $('#myDiv3,#myDiv,#myDiv1').hide();
+    $('#myDiv2').show();
+    makePlotly2(co2,timestamp);
+    makeHeatmap1(lat,lon,co2);
+  }); 
+  $('#qty').click(function(){
+    $('#myDiv1,#myDiv2,#myDiv').hide();
+    $('#myDiv3').show();
+    makePlotly3(quantity,timestamp);
+    makeHeatmap3(lat,lon,quantity);
+  });
+
+  for(i=0;i<allRows.length;i++){
+    var image = document.createElement("img");
+    var str = timestamp[i];
+    var res = str.replaceAll(':', '_');
+    console.log(res);
+    image.src= 'css/images/'+res+'.jpg';
+    document.getElementById('img').append(image);
+  }
+ }
+      
+function processData1(allRows1){
+  console.log(allRows1);
+  var id = [], timestamp = [], temp=[], humidity=[], lat=[], lon=[], co2=[], quantity=[], images=[];
+  for (var i=0; i<allRows1.length; i++) {
+    row = allRows1[i];
+    id.push( row['id'] );
+    timestamp.push( row['timestamp'] );
+    temp.push( row['temp'] ); 
+    humidity.push( row['humidity'] );
+    lat.push( row['lat'] );
+    lon.push( row['lon'] );
+    co2.push( row['co2'] );
+    quantity.push( row['quantity'] );
+  }
+  console.log( 'X',timestamp, 'Y',co2 );
+  $('#week1').click(function(){
+    $('#map1').hide();
+    $('#myDiv,#myDiv1,#myDiv2,#myDiv3').css('display','inline-block')
+    makePlotly(temp,timestamp);
+    makePlotly1(co2,timestamp);
+    makePlotly2(humidity,timestamp);
+    makePlotly3(quantity,timestamp);
+    //makeHeatmap(lat,lon,temp);
+  });
+}
+
+function processData2(allRows2){
+  console.log(allRows2);
+  var id = [], timestamp = [], temp=[], humidity=[], lat=[], lon=[], co2=[], quantity=[], images=[];
+  for (var i=0; i<allRows2.length; i++) {
+    row = allRows2[i];
+    id.push( row['id'] );
+    timestamp.push( row['timestamp'] );
+    temp.push( row['temp'] ); 
+    humidity.push( row['humidity'] );
+    lat.push( row['lat'] );
+    lon.push( row['lon'] );
+    co2.push( row['co2'] );
+    quantity.push( row['quantity'] );
+  }
+  console.log( 'X',timestamp, 'Y',co2 );
+  $('#week2').click(function(){
+    $('#map1').hide();
+    $('#myDiv,#myDiv1,#myDiv2,#mydiv3').css('display','inline-block')
+    makePlotly(temp,timestamp);
+    makePlotly1(co2,timestamp);
+    makePlotly2(humidity,timestamp);
+    makePlotly3(quantity,timestamp);
+    //makeHeatmap(lat,lon,temp);
+  });
+}
+
+function processData3(allRows3){
+  console.log(allRows3);
+  var id = [], timestamp = [], temp=[], humidity=[], lat=[], lon=[], co2=[], quantity=[], images=[];
+  for (var i=0; i<allRows3.length; i++) {
+    row = allRows3[i];
+    id.push( row['id'] );
+    timestamp.push( row['timestamp'] );
+    temp.push( row['temp'] ); 
+    humidity.push( row['humidity'] );
+    lat.push( row['lat'] );
+    lon.push( row['lon'] );
+    co2.push( row['co2'] );
+    quantity.push( row['quantity'] );
+  }
+  console.log( 'X',timestamp, 'Y',co2 );
+  $('#week3').click(function(){
+    $('#map1').hide();
+   // $('#img').
+    $('#myDiv,#myDiv1,#myDiv2,#myDiv3').css('display','inline-block')
+    makePlotly(temp,timestamp);
+    makePlotly1(co2,timestamp);
+    makePlotly2(humidity,timestamp);
+    makePlotly3(quantity,timestamp);
+    //makeHeatmap(lat,lon,temp);
+  });
+}
+
+function processData4(allRows4){
+  console.log(allRows4);
+  var id = [], timestamp = [], temp=[], humidity=[], lat=[], lon=[], co2=[], quantity=[], images=[];
+  for (var i=0; i<allRows4.length; i++) {
+    row = allRows4[i];
+    id.push( row['id'] );
+    timestamp.push( row['timestamp'] );
+    temp.push( row['temp'] ); 
+    humidity.push( row['humidity'] );
+    lat.push( row['lat'] );
+    lon.push( row['lon'] );
+    co2.push( row['co2'] );
+    quantity.push( row['quantity'] );
+  }
+  console.log( 'X',timestamp, 'Y',co2 );
+  $('#month1').click(function(){
+    $('#map1').hide();
+   // $('#img').
+    $('#myDiv,#myDiv1,#myDiv2,#myDiv3').css('display','inline-block');
+    makePlotly(temp,timestamp);
+    makePlotly1(co2,timestamp);
+    makePlotly2(humidity,timestamp);
+    makePlotly3(quantity,timestamp);
+    //makeHeatmap(lat,lon,temp);
+  });
+}
+
+function makePlotly(temp,timestamp){
+  var data_1 = [
+  {
+    x: timestamp,
+    y: temp,
+    type: 'scatter'
+  }]
+  Plotly.newPlot('myDiv', data_1, layout_chart);
+}
+
+function makePlotly1(humidity,timestamp){
+  var data_2 = [
+  {
+    x: timestamp,
+    y: humidity,
+    type: 'scatter'
+  }
+]
+Plotly.newPlot('myDiv1', data_2, layout_chart);
+}
+
+function makePlotly2(co2,timestamp){
+var data_3 = [
+  {
+    x: timestamp,
+    y: co2,
+    type: 'scatter'
+  }
+]
+Plotly.newPlot('myDiv2', data_3, layout_chart);
+}
+
+function makePlotly3(quantity,timestamp){
+var data_4 = [
+  {
+    x: timestamp,
+    y: quantity,
+    type: 'scatter'
+  }
+]
+Plotly.newPlot('myDiv3', data_4, layout_chart);
+}
+
+var layout_chart = {
+  autosize: false,
+  width: 600,
+  height: 500,
+  margin: {
+    l: 50,
+    r: 50,
+    b: 100,
+    t: 100,
+    pad: 4
+  },
+  yaxis:{title:'Magnitude'}
+};
+
+function makeHeatmap(lat,lon,temp){
+ var latitude=[];
+ for(i=0;i<lat.length;i++){
+  var str1 = lat[i];
+  var str1 = str1.replaceAll('"', '');
+  latitude.push(str1);
+ }
+ console.log(latitude);
+
+  var data = [
+        {type: "densitymapbox", lon:lon, lat:latitude, z:temp,
+        radius: 60, colorbar: {y: 1, yanchor: 'top', len: 0.5},colorscale:'Portland'}
+      ];
+      Plotly.newPlot('map1', data, layout, config);
+  }
+
+function makeHeatmap1(lat,lon,co2){
+ var latitude=[];
+ for(i=0;i<lat.length;i++){
+  var str1 = lat[i];
+  var str1 = str1.replaceAll('"', '');
+  latitude.push(str1);
+ }
+ console.log(latitude);
+
+ var data_co2 = [
+      {type: "densitymapbox", lon: lon, lat: latitude, z: co2,
+      radius: 60, colorbar: {y: 1, yanchor: 'top', len: 0.5},colorscale:'YlGnBu'}];
+      Plotly.newPlot('map1', data_co2, layout, config);
+}
+
+function makeHeatmap2(lat,lon,humidity){
+ var latitude=[];
+ for(i=0;i<lat.length;i++){
+  var str1 = lat[i];
+  var str1 = str1.replaceAll('"', '');
+  latitude.push(str1);
+ }
+ console.log(latitude);
+
+var data_humidity = [
+      {type: "densitymapbox", lon: lon, lat: latitude, z: humidity,
+      radius: 60, colorbar: {y: 1, yanchor: 'top', len: 0.5},colorscale:'Electric'}];
+      Plotly.newPlot('map1', data_humidity, layout, config);
+}
+
+function makeHeatmap3(lat,lon,quantity){
+ var latitude=[];
+ for(i=0;i<lat.length;i++){
+  var str1 = lat[i];
+  var str1 = str1.replaceAll('"', '');
+  latitude.push(str1);
+ }
+ console.log(latitude);
+
+ var data_qty = [
+      {type: "densitymapbox", lon: lon, lat: latitude, z: quantity,
+      radius: 60, colorbar: {y: 1, yanchor: 'top', len: 0.5},colorscale:'Viridis'}];
+      Plotly.newPlot('map1', data_qty, layout, config);
+ }
+        
+  var layout = {mapbox: {style: 'streets', center: {lat: 36.12073400669619,lon: 139.21555254377927}, zoom:19}, width: 1200, height: 600};
+  var config = {mapboxAccessToken: "pk.eyJ1IjoiY2llbG9naW56YWZhcm0iLCJhIjoiY2tnMGczbjIyMGQwMTJybGI4MGJsNTBzbSJ9.pPLT9Q2Kj_dUVW7BAqAyHw"};
+
+      // function change(){
+      //   Plotly.newPlot('map1', data, layout, config);
+      //   Plotly.newPlot('myDiv', data_1, layout_chart);
+      // }
+    
+      // function change1(){
+      //   Plotly.newPlot('map1', data_co2, layout, config);
+      //   Plotly.newPlot('myDiv', data_2, layout_chart);
+      // }
+
+      // function change2(){
+      //   Plotly.newPlot('map1', data_humidity, layout, config);
+      //   Plotly.newPlot('myDiv', data_3, layout_chart);
+      // }
+      
+      // function change3(){
+      //   Plotly.newPlot('map1', data_qty, layout, config);
+      //   Plotly.newPlot('myDiv', data_4, layout_chart);
+      // }
+
+// function getImage(el, x) {
+//       // when hovering over an element, do something
+//       el.on('myDiv', function(d) {
+
+//         // extract tooltip text
+//         //txt = d.points[0].data.text;
+//         // image is stored locally
+//         image_location = 'css/images/1.jpg';
+
+//         // define image to be shown
+//         var img = {
+//           // location of image
+//           source: image_location,
+//           // top-left corner
+//           x: 0,
+//           y: 1,
+//           sizex: 0.2,
+//           sizey: 0.2,
+//           xref: 'paper',
+//           yref: 'paper'
+//         };
+
+//         // show image and annotation 
+//         Plotly.relayout(el.id, {
+//             images: [img] 
+//         });
+//       })
+//     }
+//     getImage();
+// var marker_data = [{
+//         type: 'scattermapbox',
+//         mode: 'markers',
+//         text: '',
+//         lon: [139.5243120, 139.524311, 139.524307, 139.524388, 139.524407,139.524282,139.524500, 139.524100, 139.523600, 139.523700, 139.534000, 139.524398, 139.524350,139.2160859,139.2160523,139.2159752,139.2160634,139.2160298], lat: [35.8413639, 35.8413548, 35.8413368, 35.8413168,35.8413768,35.8413268,35.8413368,35.8613000,35.8414000,35.8414500,35.8413100,35.8413368,35.8413470,36.1210158,36.1210162,36.1210163,36.1210276,36.1210268],
+//         marker: {
+//           color: 'rgba(68,68,68,0)',
+//           colorscale: '',
+//           cmin: 0,
+//           cmax: 1.4,
+//           reversescale: true,
+//           opacity: 0.5,
+//           size: 3,
+//           colorbar:{
+//             thickness: 10,
+//             titleside: 'right',
+//             outlinecolor: 'rgba(68,68,68,0)',
+//             ticks: 'outside',
+//             ticklen: 3,
+//             shoticksuffix: 'last',
+//             ticksuffix: 'inches',
+//             dtick: 0.1
+//           }
+//         },
+//         name: 'NA Precipitation'
+//     }];
+
+//Plotly.newPlot('myDiv', data, layout);
+//   {type: 'densitymapbox', lon: [139.5243129, 139.524311, 139.524307], lat: [35.8413639, 35.8413548, 35.8413368],
+//    radius: [50, 100, 10],  colorbar: {y: 0, yanchor: 'bottom', len: 0.45}
+ // }];
+
+      // var map = L.map('map', {
+      //       zoomControl:true, maxZoom:28, minZoom:1
+      //   }).fitBounds([[36.12073400669619,139.21555254377927],[36.121158793854455,139.2163841732294]]);
+      //   var hash = new L.Hash(map);
+      //   map.attributionControl.setPrefix('<a href="https://github.com/tomchadwin/qgis2web" target="_blank">qgis2web</a> &middot; <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a> &middot; <a href="https://qgis.org">QGIS</a>');
+      //   var autolinker = new Autolinker({truncate: {length: 30, location: 'smart'}});
+      //   var bounds_group = new L.featureGroup([]);
+      //   function setBounds() {
+      //   }
+      //   map.createPane('pane_OpenStreetMap_0');
+      //   map.getPane('pane_OpenStreetMap_0').style.zIndex = 400;
+      //   var layer_OpenStreetMap_0 = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      //       pane: 'pane_OpenStreetMap_0',
+      //       opacity: 1.0,
+      //       attribution: '',
+      //       minZoom: 1,
+      //       maxZoom: 28,
+      //       minNativeZoom: 0,
+      //       maxNativeZoom: 19
+      //   });
+        //layer_OpenStreetMap_0;
+      //  map.addLayer(layer_OpenStreetMap_0);
+        
+        // var map = L.map( 'map', {
+        //       center: [35.84136, 139.5243],
+        //       zoom: 22
+        //     });
+        //     L.tileLayer( 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        //      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+        //      subdomains: ['a','b','c']
+        //     }).addTo( map );
+//         var myIcon = L.icon({
+//           iconUrl: 'css/images/marker-icon.png',
+//           iconSize: [38, 55]  // アイコンサイズ
+//         });
+//         var imageUrl = 'css/images/';
+// var myGeoJson =
+// {
+// "type": "FeatureCollection",
+// "name": "yori",
+// "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+// "features": [
+// { "type": "Feature", "properties": { "id": 1, "lat": 36.1209405, "lon": 139.2160833, "temp": 16.97, "co2": 400, "humidity": 62.51, "quantity": 2 }, "geometry": { "type": "Point", "coordinates": [ 36.1209405,139.2160833 ] } },
+// { "type": "Feature", "properties": { "id": 3, "lat": 36.1209413, "lon": 139.2160605, "temp": 17.01, "co2": 409, "humidity": 65.15, "quantity": 10 }, "geometry": { "type": "Point", "coordinates": [ 36.1209413,139.2160605 ] } },
+// { "type": "Feature", "properties": { "id": 4, "lat": 36.1209414, "lon": 139.2160495, "temp": 16.94, "co2": 410, "humidity": 67.1, "quantity": 6 }, "geometry": { "type": "Point", "coordinates": [ 36.1209414,139.2160495 ] } },
+// { "type": "Feature", "properties": { "id": 5, "lat": 36.1209422, "lon": 139.2160383, "temp": 16.86, "co2": 400, "humidity": 68.16, "quantity": 9 }, "geometry": { "type": "Point", "coordinates": [ 36.1209422,139.2160383 ] } },
+// { "type": "Feature", "properties": { "id": 6, "lat": 36.1209431, "lon": 139.2160275, "temp": 16.87, "co2": 422, "humidity": 68.32, "quantity": 6 }, "geometry": { "type": "Point", "coordinates": [ 36.1209431,139.2160275 ] } },
+// { "type": "Feature", "properties": { "id": 8, "lat": 36.1209443, "lon": 139.2160051, "temp": 16.9, "co2": 413, "humidity": 68.21, "quantity": 5 }, "geometry": { "type": "Point", "coordinates": [ 36.1209443,139.2160051 ] } },
+// { "type": "Feature", "properties": { "id": 9, "lat": 36.1209449, "lon": 139.2159941, "temp": 16.87, "co2": 408, "humidity": 67.98, "quantity": 9 }, "geometry": { "type": "Point", "coordinates": [ 36.1209449,139.215994099999989 ] } },
+// { "type": "Feature", "properties": { "id": 10, "lat": 36.1209449, "lon": 139.2159832, "temp": 16.9, "co2": 400, "humidity": 66.48, "quantity": 6 }, "geometry": { "type": "Point", "coordinates": [ 36.1209449, 139.215983200000011 ] } },
+// { "type": "Feature", "properties": { "id": 13, "lat": 36.1209455, "lon": 139.2159493, "temp": 16.9, "co2": 436, "humidity": 67.3, "quantity": 3 }, "geometry": { "type": "Point", "coordinates": [ 36.1209455, 139.2159493 ] } },
+// { "type": "Feature", "properties": { "id": 14, "lat": 36.1209456, "lon": 139.2159385, "temp": 16.81, "co2": 407, "humidity": 68.18, "quantity": 7 }, "geometry": { "type": "Point", "coordinates": [ 36.1209456,139.2159385 ] } }
+// ]
+// }
+
+// L.geoJson(myGeoJson, {
+//   style: function(feature){
+//     return {
+//       color: '#000',
+//       weight : '0.5'
+//     }
+//   },
+//   pointToLayer: function(geoJsonPoint, latlng){
+//     return L.marker(latlng, {
+//         icon : myIcon
+//       });
+//     },
+//     onEachFeature: function(feature, layer){ 
+//     var images = ['css/images/1.jpg','css/images/2.jpg','css/images/3.jpg','css/images/4.jpg'];
+//     // var i = 0;
+
+//     for(i=0;i<images.length;i++){
+//       var image = document.createElement("img");
+//       image.src = images[i];
+//       layer.on('click', function(e) {
+//       console.log('Layer clicked!', e);
+//       document.getElementById('img').append(image);
+//     });
+//     }
+//     } 
+//   }).addTo(map);
+     // Plotly.newPlot('markers', marker_data, layout, config);
+
+// var layout = {mapbox: {style: 'light', center: {lat: 20}}, width: 600, height: 400};
+
+// var config = {mapboxAccessToken: "pk.eyJ1IjoiY2llbG9naW56YWZhcm0iLCJhIjoiY2tnMGczbjIyMGQwMTJybGI4MGJsNTBzbSJ9.pPLT9Q2Kj_dUVW7BAqAyHw"};
+
+// Plotly.newPlot('map', data, layout, config);
+
+//mapboxgl.accessToken = 'pk.eyJ1IjoiY2llbG9naW56YWZhcm0iLCJhIjoiY2tnMGczbjIyMGQwMTJybGI4MGJsNTBzbSJ9.pPLT9Q2Kj_dUVW7BAqAyHw';
+// var map = new mapboxgl.Map({
+// container: 'map',
+// style: 'mapbox://styles/mapbox/streets-v11',
+// center: [139.2160822, 36.1209907],
+// zoom: 17,
+// opacity:0.5
+// });
+ 
+// map.on('load', function () {
+// var tempheatmap = {
+// "type": "FeatureCollection",
+// "name": "parking1",
+// "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+// "features": [
+// { "type": "Feature", "properties": { "id": 1, "lat": 35.8413639, "lon": 139.5243129, "temp": 17.77, "co2": 0, "humidity": 41.41, "quantity": 10 }, "geometry": { "type": "Point", "coordinates": [ 139.524312900000012, 35.8413639 ] } },
+// { "type": "Feature", "properties": { "id": 2, "lat": 35.8413548, "lon": 139.524311, "temp": 17.78, "co2": 0, "humidity": 41.51, "quantity": 8 }, "geometry": { "type": "Point", "coordinates": [ 139.524311, 35.8413548 ] } },
+// { "type": "Feature", "properties": { "id": 3, "lat": 35.8413458, "lon": 139.5243094, "temp": 17.77, "co2": 0, "humidity": 41.73, "quantity": 9 }, "geometry": { "type": "Point", "coordinates": [ 139.5243094, 35.8413458 ] } },
+// { "type": "Feature", "properties": { "id": 4, "lat": 35.8413368, "lon": 139.524307, "temp": 19.84, "co2": 0, "humidity": 51.76, "quantity": 6 }, "geometry": { "type": "Point", "coordinates": [ 139.524307, 35.8413368 ] } },
+// { "type": "Feature", "properties": { "id": 5, "lat": 35.8413282, "lon": 139.524306, "temp": 19.8, "co2": 0, "humidity": 45.98, "quantity": 8 }, "geometry": { "type": "Point", "coordinates": [ 139.524306, 35.8413282 ] } },
+// { "type": "Feature", "properties": { "id": 6, "lat": 35.8413181, "lon": 139.5243048, "temp": 19.15, "co2": 0, "humidity": 39.89, "quantity": 10 }, "geometry": { "type": "Point", "coordinates": [ 139.52430480000001, 35.8413181 ] } }
+// ]
+// }
+// // Add a geojson point source.
+// // Heatmap layers also work with a vector tile source.
+// map.addSource('tempheatmap', {
+// 'type': 'geojson',
+// 'data':
+// ''
+// });
+ 
+// map.addLayer(
+// {
+// 'id': 'earthquakes-heat',
+// 'type': 'heatmap',
+// 'source': 'tempheatmap',
+// 'maxzoom': 9,
+// 'paint': {
+// // Increase the heatmap weight based on frequency and property magnitude
+// 'heatmap-weight': [
+// 'interpolate',
+// ['linear'],
+// ['get', 'mag'],
+// 0,
+// 0,
+// 6,
+// 1
+// ],
+// // Increase the heatmap color weight weight by zoom level
+// // heatmap-intensity is a multiplier on top of heatmap-weight
+// 'heatmap-intensity': [
+// 'interpolate',
+// ['linear'],
+// ['zoom'],
+// 0,
+// 1,
+// 9,
+// 3
+// ],
+// // Color ramp for heatmap.  Domain is 0 (low) to 1 (high).
+// // Begin color ramp at 0-stop with a 0-transparancy color
+// // to create a blur-like effect.
+// 'heatmap-color': [
+// 'interpolate',
+// ['linear'],
+// ['heatmap-density'],
+// 10,
+// 'rgba(33,102,172,0)',
+// 12,
+// 'rgb(103,169,207)',
+// 14,
+// 'rgb(209,229,240)',
+// 16,
+// 'rgb(253,219,199)',
+// 18,
+// 'rgb(239,138,98)',
+// 20,
+// 'rgb(178,24,43)'
+// ],
+// // Adjust the heatmap radius by zoom level
+// 'heatmap-radius': [
+// 'interpolate',
+// ['linear'],
+// ['zoom'],
+// 0,
+// 2,
+// 9,
+// 20
+// ],
+// // Transition from heatmap to circle layer by zoom level
+// 'heatmap-opacity': [
+// 'interpolate',
+// ['linear'],
+// ['zoom'],
+// 7,
+// 1,
+// 9,
+// 0
+// ]
+// }
+// },
+// 'waterway-label'
+// );
+ 
+// map.addLayer(
+// {
+// 'id': 'earthquakes-point',
+// 'type': 'circle',
+// 'source': 'tempheatmap',
+// 'minzoom': 7,
+// 'paint': {
+// // Size circle radius by earthquake magnitude and zoom level
+// 'circle-radius': [
+// 'interpolate',
+// ['linear'],
+// ['zoom'],
+// 7,
+// ['interpolate', ['linear'], ['get', 'mag'], 1, 1, 6, 4],
+// 16,
+// ['interpolate', ['linear'], ['get', 'mag'], 1, 5, 6, 50]
+// ],
+// // Color circle by earthquake magnitude
+// 'circle-color': [
+// 'interpolate',
+// ['linear'],
+// ['get', 'mag'],
+// 1,
+// 'rgba(33,102,172,0)',
+// 2,
+// 'rgb(103,169,207)',
+// 3,
+// 'rgb(209,229,240)',
+// 4,
+// 'rgb(253,219,199)',
+// 5,
+// 'rgb(239,138,98)',
+// 6,
+// 'rgb(178,24,43)'
+// ],
+// 'circle-stroke-color': 'white',
+// 'circle-stroke-width': 1,
+// // Transition from heatmap to circle layer by zoom level
+// 'circle-opacity': [
+// 'interpolate',
+// ['linear'],
+// ['zoom'],
+// 7,
+// 0,
+// 8,
+// 1
+// ]
+// }
+// },
+// 'waterway-label'
+// );
+// });
+//         var map = L.map('map', {
+//             zoomControl:true, maxZoom:28, minZoom:1
+//         }).fitBounds([[36.12095829069404,139.21594348820798],[36.121086024378215,139.21619355978845]]);
+//         var hash = new L.Hash(map);
+//         map.attributionControl.setPrefix('<a href="https://github.com/tomchadwin/qgis2web" target="_blank">qgis2web</a> &middot; <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a> &middot; <a href="https://qgis.org">QGIS</a>');
+//         var autolinker = new Autolinker({truncate: {length: 30, location: 'smart'}});
+//         var bounds_group = new L.featureGroup([]);
+//         function setBounds() {
+//         }
+//         map.createPane('pane_OpenStreetMap_0');
+//         map.getPane('pane_OpenStreetMap_0').style.zIndex = 400;
+//         var layer_OpenStreetMap_0 = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+//             pane: 'pane_OpenStreetMap_0',
+//             opacity: 1.0,
+//             attribution: '',
+//             minZoom: 1,
+//             maxZoom: 28,
+//             minNativeZoom: 0,
+//             maxNativeZoom: 19
+//         });
+//         layer_OpenStreetMap_0;
+//         map.addLayer(layer_OpenStreetMap_0);
+//         function pop_data_1_1(feature, layer) {
+//             var popupContent = '<table>\
+//                     <tr>\
+//                         <td colspan="2">' + (feature.properties['id'] !== null ? autolinker.link(feature.properties['id'].toLocaleString()) : '') + '</td>\
+//                     </tr>\
+//                     <tr>\
+//                         <td colspan="2">' + (feature.properties['lat'] !== null ? autolinker.link(feature.properties['lat'].toLocaleString()) : '') + '</td>\
+//                     </tr>\
+//                     <tr>\
+//                         <td colspan="2">' + (feature.properties['lon'] !== null ? autolinker.link(feature.properties['lon'].toLocaleString()) : '') + '</td>\
+//                     </tr>\
+//                     <tr>\
+//                         <td colspan="2">' + (feature.properties['temp'] !== null ? autolinker.link(feature.properties['temp'].toLocaleString()) : '') + '</td>\
+//                     </tr>\
+//                     <tr>\
+//                         <td colspan="2">' + (feature.properties['co2'] !== null ? autolinker.link(feature.properties['co2'].toLocaleString()) : '') + '</td>\
+//                     </tr>\
+//                     <tr>\
+//                         <td colspan="2">' + (feature.properties['humidity'] !== null ? autolinker.link(feature.properties['humidity'].toLocaleString()) : '') + '</td>\
+//                     </tr>\
+//                     <tr>\
+//                         <td colspan="2">' + (feature.properties['quantity'] !== null ? autolinker.link(feature.properties['quantity'].toLocaleString()) : '') + '</td>\
+//                     </tr>\
+//                 </table>';
+//             layer.bindPopup(popupContent, {maxHeight: 400});
+//         }
+
+// function change(){
+//     map.createPane('pane_data_1_1');
+//         map.getPane('pane_data_1_1').style.zIndex = 401;
+//         //map.getPane('pane_data_1_1').style['mix-blend-mode'] = 'normal';
+//         var data_1_1_hm = [
+//         [36.1209907, 139.2160822, 19.46], // lat, lng, intensity
+//         [36.1207898, 139.2160712, 15.5],
+//         [36.1207898, 139.2160712, 15.5],
+//         [36.1206898, 139.2160712, 16.5],
+//         [36.1208898, 139.2160712, 15.5],
+//         [36.1209898, 139.2160712, 25.5],
+//         [36.1207998, 139.2160712, 5.5],
+//         [36.1207698, 139.2160712, 18.5],
+//         [36.1207798, 139.2160712, 15.5]
+//         ];
+//         function getColor(d) {
+//         return d > 24 ? 'blue' :
+//            d > 20  ? 'blue' :
+//            d > 16  ? 'blue' :
+//            d > 12  ? 'blue' :
+//            d > 8  ? 'white' :
+//            d > 4  ? 'white' :
+//            d > 0   ? 'white' :
+//                       'red';
+//         }
+//         var layer_data_1_1 = new L.heatLayer(data_1_1_hm, {
+//             attribution: '',
+//             weight: 2,
+//             interactive: true,
+//             radius: 20,
+//             max: 1,
+//             minOpacity: 1,
+//             fillColor: getColor(data_1_1_hm[2])
+//         });
+//         bounds_group.addLayer(layer_data_1_1);
+//         map.addLayer(layer_data_1_1);
+//         setBounds();
+//         function geoJson2heat(geojson, weight) {
+//           return geojson.features.map(function(feature) {
+//             return [
+//               feature.geometry.coordinates[1],
+//               feature.geometry.coordinates[0],
+//               feature.properties[weight]
+//             ];
+//           });
+//         }
+// }
+// function change1(){
+//     map.createPane('pane_data_1_1');
+//         map.getPane('pane_data_1_1').style.zIndex = 401;
+//         map.getPane('pane_data_1_1').style['mix-blend-mode'] = 'normal';
+//         var data_1_1_hm = geoJson2heat(json_data_1_1,
+//                                       '');
+//         var layer_data_1_1 = new L.heatLayer(data_1_1_hm, {
+//             attribution: '',
+//             interactive: true,
+//             radius: 20,
+//             max: 1,
+//             minOpacity: 1,
+//             gradient: {0: '#d73027', 0.1429: '#fc8d59', 0.2857: '#fee08b', 0.4286: '#ffffbf', 0.5714: '#d9ef8b', 0.7143: '#91cf60', 0.8571: '#1a9850', 1: '#1a9850'}});
+//             bounds_group.addLayer(layer_data_1_1);
+//         map.addLayer(layer_data_1_1);
+//         setBounds();
+//         function geoJson2heat(geojson, weight) {
+//           return geojson.features.map(function(feature) {
+//             return [
+//               feature.geometry.coordinates[1],
+//               feature.geometry.coordinates[0],
+//               feature.properties[weight]
+//             ];
+//           });
+//         }
+// }
+// function change2(){
+//     map.createPane('pane_data_1_1');
+//         map.getPane('pane_data_1_1').style.zIndex = 401;
+//         map.getPane('pane_data_1_1').style['mix-blend-mode'] = 'normal';
+//         var data_1_1_hm = geoJson2heat(json_data_1_1,
+//                                       '');
+//         var layer_data_1_1 = new L.heatLayer(data_1_1_hm, {
+//             attribution: '',
+//             interactive: true,
+//             radius: 20,
+//             max: 1,
+//             minOpacity: 1,
+//             gradient: {0: '#d73027', 0.1429: '#fc8d59', 0.2857: '#fee08b', 0.4286: '#ffffbf', 0.5714: '#d9ef8b', 0.7143: '#91cf60', 0.8571: '#1a9850', 1: '#1a9850'}});
+//             bounds_group.addLayer(layer_data_1_1);
+//         map.addLayer(layer_data_1_1);
+//         setBounds();
+//         function geoJson2heat(geojson, weight) {
+//           return geojson.features.map(function(feature) {
+//             return [
+//               feature.geometry.coordinates[1],
+//               feature.geometry.coordinates[0],
+//               feature.properties[weight]
+//             ];
+//           });
+//         }
+// }
+// function change3(){
+//     map.createPane('pane_data_1_1');
+//         map.getPane('pane_data_1_1').style.zIndex = 401;
+//         map.getPane('pane_data_1_1').style['mix-blend-mode'] = 'normal';
+//         var data_1_1_hm = geoJson2heat(json_data_1_1,
+//                                       '');
+//         var layer_data_1_1 = new L.heatLayer(data_1_1_hm, {
+//             attribution: '',
+//             interactive: true,
+//             radius: 20,
+//             max: 1,
+//             minOpacity: 1,
+//             gradient: {0: '#d73027', 0.1429: '#fc8d59', 0.2857: '#fee08b', 0.4286: '#ffffbf', 0.5714: '#d9ef8b', 0.7143: '#91cf60', 0.8571: '#1a9850', 1: '#1a9850'}});
+//             bounds_group.addLayer(layer_data_1_1);
+//         map.addLayer(layer_data_1_1);
+//         setBounds();
+//         function geoJson2heat(geojson, weight) {
+//           return geojson.features.map(function(feature) {
+//             return [
+//               feature.geometry.coordinates[1],
+//               feature.geometry.coordinates[0],
+//               feature.properties[weight]
+//             ];
+//           });
+//         }
+// }
+
+//         function Co2heatmap(){
+//             // map.removeLayer(allData);
+//             bounds_group.addLayer(layer_data_1_1);
+//             map.addLayer(layer_data_1_1);
+//             // L.geoJson(myGeoJson, {
+//             //  onEachFeature: function(feature, layer){ 
+//             //  layer.bindPopup('<p>Co2: '+feature.properties.co2+'</p>');
+//             // } 
+//             // }).addTo(map);
+//         }
+//         function tempheatmap(){
+//            map.removeLayer(layer_data_1_1);
+//            map.createPane('pane_data_2_2');
+//            map.getPane('pane_data_2_2').style.zIndex = 401;
+//            map.getPane('pane_data_2_2').style['mix-blend-mode'] = 'normal';
+//            var data_1_1_hm = geoJson2heat(json_data_1_1,
+//                                       '');
+//            var layer_data_2_2 = new L.heatLayer(data_1_1_hm, {
+//             attribution: '',
+//             interactive: true,
+//             radius: 30,
+//             max: 1,
+//             minOpacity: 1,
+//             gradient: {0: '#d73027', 0.1429: '#fc8d59', 0.2857: '#fee08b', 0.4286: '#ffffbf', 0.5714: '#d9ef8b', 0.7143: '#91cf60', 0.8571: '#1a9850', 1: '#1a9850'}});
+//             bounds_group.addLayer(layer_data_2_2);
+//            // map.addLayer(layer_data_2_2);
+//            setBounds();
+//            function geoJson2heat(geojson, weight) {
+//            return geojson.features.map(function(feature) {
+//            return [
+//               feature.geometry.coordinates[1],
+//               feature.geometry.coordinates[0],
+//               feature.properties[weight]
+//             ];
+//           });
+//         }
+//         }
+//         function humidityheatmap(){
+//            map.removeLayer(layer_data_2_2);
+//            map.createPane('pane_data_3_3');
+//            map.getPane('pane_data_3_3').style.zIndex = 401;
+//            map.getPane('pane_data_3_3').style['mix-blend-mode'] = 'normal';
+//            var data_1_1_hm = geoJson2heat(json_data_1_1,
+//                                       '');
+//            var layer_data_3_3 = new L.heatLayer(data_1_1_hm, {
+//             attribution: '',
+//             interactive: true,
+//             radius: 30,
+//             max: 1,
+//             minOpacity: 1,
+//             gradient: {0: '#d73027', 0.1429: '#fc8d59', 0.2857: '#fee08b', 0.4286: '#ffffbf', 0.5714: '#d9ef8b', 0.7143: '#91cf60', 0.8571: '#1a9850', 1: '#1a9850'}});
+//             bounds_group.addLayer(layer_data_3_3);
+//             map.addLayer(layer_data_3_3);
+//            setBounds();
+//            function geoJson2heat(geojson, weight) {
+//            return geojson.features.map(function(feature) {
+//            return [
+//               feature.geometry.coordinates[1],
+//               feature.geometry.coordinates[0],
+//               feature.properties[weight]
+//             ];
+//            });
+//         } 
+//     }
+//         function qtyheatmap(){
+//            map.removeLayer(layer_data_3_3);
+//            map.createPane('pane_data_4_4');
+//            map.getPane('pane_data_4_4').style.zIndex = 401;
+//            map.getPane('pane_data_4_4').style['mix-blend-mode'] = 'normal';
+//            var data_1_1_hm = geoJson2heat(json_data_1_1,
+//                                       '');
+//            var layer_data_4_4 = new L.heatLayer(data_1_1_hm, {
+//             attribution: '',
+//             interactive: true,
+//             radius: 30,
+//             max: 1,
+//             minOpacity: 1,
+//             gradient: {0: '#d73027', 0.1429: '#fc8d59', 0.2857: '#fee08b', 0.4286: '#ffffbf', 0.5714: '#d9ef8b', 0.7143: '#91cf60', 0.8571: '#1a9850', 1: '#1a9850'}});
+//             bounds_group.addLayer(layer_data_4_4);
+//             map.addLayer(layer_data_4_4);
+//             setBounds();
+//             function geoJson2heat(geojson, weight) {
+//             return geojson.features.map(function(feature) {
+//             return [
+//               feature.geometry.coordinates[1],
+//               feature.geometry.coordinates[0],
+//               feature.properties[weight]
+//             ];
+//             });
+//         }
+//     }
+        </script>
+    </body>
+</html>
