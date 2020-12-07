@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+<script src='https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.js'></script>
+<link href='https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css' rel='stylesheet' />
+</head>
+<style> 
+.session {
+  margin-bottom: 20px;
+}
+
+.row {
+  height: 12px;
+  width: 100%;
+}
+
+.colors {
+  background: linear-gradient(to right, #2dc4b2, #3bb3c3, #669ec4, #8b88b6, #a2719b, #aa5e79);
+  margin-bottom: 5px;
+}
+
+.label {
+  width: 15%;
+  display: inline-block;
+  text-align: center;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Helvetica Neue', Helvetica, Arial, Sans-serif;
+}
+
+#map {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 100%;
+}
+
+h1 {
+  font-size: 20px;
+  line-height: 30px;
+}
+
+h2 {
+  font-size: 14px;
+  line-height: 20px;
+  margin-bottom: 10px;
+}
+
+a {
+  text-decoration: none;
+  color: #2dc4b2;
+}
+
+#console {
+  position: absolute;
+  width: 240px;
+  margin: 10px;
+  padding: 10px 20px;
+  background-color: white;
+}
+</style>
+<body>
+<div id='map'></div>
+<div id='console'>  
+<div class='session' id='sliderbar'>
+    <h2>Hour: <label id='active-hour'>12PM</label></h2>
+    <input id='slider' class='row' type='range' min='0' max='23' step='1' value='12' />
+</div>
+</div>
+
+<script>
+mapboxgl.accessToken = 'pk.eyJ1IjoiY2llbG9naW56YWZhcm0iLCJhIjoiY2tnMGczbjIyMGQwMTJybGI4MGJsNTBzbSJ9.pPLT9Q2Kj_dUVW7BAqAyHw';
+
+var map = new mapboxgl.Map({
+  container: 'map', // container element id
+  style: 'mapbox://styles/mapbox/light-v10',
+  center: [-74.0059, 40.7128], // initial map center in [lon, lat]
+  zoom: 12
+});
+
+filter: ['==', ['number', ['get', 'Hour']], 12]
+
+map.on('load', function() {
+  map.addLayer({
+    id: 'collisions',
+    type: 'circle',
+    source: {
+      type: 'geojson',
+      data: 'data/data_1_1.js' // replace this with the url of your own geojson
+    },
+    paint: {
+      'circle-radius': [
+        'interpolate',
+        ['linear'],
+        ['number', ['get', 'Casualty']],
+        0, 4,
+        5, 24
+      ],
+      'circle-color': [
+        'interpolate',
+        ['linear'],
+        ['number', ['get', 'Casualty']],
+        0, '#2DC4B2',
+        1, '#3BB3C3',
+        2, '#669EC4',
+        3, '#8B88B6',
+        4, '#A2719B',
+        5, '#AA5E79'
+      ],
+      'circle-opacity': 0.8
+    }
+  });
+});
+
+document.getElementById('slider').addEventListener('input', function(e) {
+  var hour = parseInt(e.target.value);
+  // update the map
+  map.setFilter('collisions', ['==', ['number', ['get', 'Hour']], hour]);
+
+  // converting 0-23 hour to AMPM format
+  var ampm = hour >= 12 ? 'PM' : 'AM';
+  var hour12 = hour % 12 ? hour % 12 : 12;
+
+  // update text in the UI
+  document.getElementById('active-hour').innerText = hour12 + ampm;
+});
+
+</script>
+</body>
+</html>

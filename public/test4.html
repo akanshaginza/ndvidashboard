@@ -1,0 +1,72 @@
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>jQuery UI Slider - Default functionality</title>
+</head>
+<style>
+body {
+background:url("//demo.etcetera.co.zw/the-blurred-819385_1920.jpg") center center no-repeat;
+  background-size:cover;
+}
+
+.wrapper {
+  margin: 0 auto;
+  width:60%;
+   margin-top:180px;  
+}
+
+#timelineSlider > div {
+    margin-top:-50px;
+    text-align:center;
+    width:20px;
+    display:block;
+    text-size:10px;
+    margin-left:-10px;
+    z-index:3;
+    position: absolute;
+}
+
+.ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default {
+  display:block;
+  margin-top:-25px;
+  width:50px !important;
+  height:50px !important;
+  background:white !important;
+  border-radius: 50px;
+  border: 3px solid #1e1e1e !important;
+}
+
+.ui-slider-horizontal {
+  height:3px;
+  border-radius:10px;
+  background:#1c1c1c;
+  border: 0px;
+}
+</style>
+<script>
+var timelineSlider = $("#timelineSlider");
+var date = $("#timelineSlider > div");
+var initialValue = 1930;
+var handle = null;
+
+var updateSliderValue = function (event, ui) {
+    handle = handle || $(".ui-slider-handle", timelineSlider);
+    date.text(ui.value || initialValue)
+              .css(handle.position());
+};
+
+timelineSlider.slider({
+    min: 1930, max: 2016,
+    slide: updateSliderValue,
+    create: updateSliderValue,
+    value: initialValue,
+});
+</script>
+<body>
+ <div class="wrapper">
+    <div id="timelineSlider">
+    <div class="year">Slide to view event</div>
+ </div>
+ </div>
+</body>
+</html>
