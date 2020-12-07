@@ -141,8 +141,22 @@
                         </li>
                     </ul>
                 </li>
-                <li>
-                    <a href="#" id="qty">Quantity</a>
+                <li class="active">
+                  <a href="#lanes" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Quantity</a>
+                  <ul class="collapse list-unstyled" id="lanes">
+                      <li>
+                          <a href="#" id="qty">Quantity</a>
+                      </li>
+                      <li>
+                          <a href="#" id="lane1">Lane1</a>
+                      </li>
+                      <li>
+                          <a href="#" id="lane2">Lane2</a>
+                      </li>
+                      <li>
+                          <a href="#" id="lane3">Lane3</a>
+                      </li>
+                  </ul>
                 </li>
                 <!-- <p>Trend</p> -->
                 <li class="active">
@@ -302,6 +316,15 @@
         //         $('a[aria-expanded=true]').attr('aria-expanded', 'false');
         //     });
         // });
+        $('#lane1').click(function(){
+          window.open('paranoma1.html','_blank');
+        });
+        $('#lane2').click(function(){
+          window.open('paranoma2.html','_blank');
+        });
+        $('#lane3').click(function(){
+          window.open('paranoma.html','_blank');
+        });
         var img =['css/images/1.jpg','css/images/2.jpg','css/images/3.jpg','css/images/4.jpg','css/images/5.jpg','css/images/6.jpg','css/images/7.jpg','css//images/8.jpg',
         'css/images/9.jpg','css/images/10.jpg','css/images/11.jpg','css/images/12.jpg','css/images/13.jpg','css/images/14.jpg'];
         Plotly.d3.csv("data/detected_data.csv", function(data){ processData(data) } );
