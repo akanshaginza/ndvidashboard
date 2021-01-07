@@ -50,6 +50,7 @@ position: relative;
 margin: 0;
 cursor: ew-resize;
 }
+
 </style>
 <div id="map"></div>
 <div class="map-overlay top">
@@ -68,11 +69,12 @@ cursor: ew-resize;
  
 <script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
 <script>
+
 mapboxgl.accessToken = 'pk.eyJ1IjoiY2llbG9naW56YWZhcm0iLCJhIjoiY2tnMGczbjIyMGQwMTJybGI4MGJsNTBzbSJ9.pPLT9Q2Kj_dUVW7BAqAyHw';
 var map = new mapboxgl.Map({
 container: 'map',
 style: 'mapbox://styles/mapbox/light-v10',
-center: [31.4606, 20.7927],
+center: [139.825603, 35.898598],
 zoom: 0.5
 });
  
@@ -100,68 +102,53 @@ map.setFilter('earthquake-labels', filters);
 document.getElementById('month').textContent = months[month];
 }
  
-map.on('load', function(){
-
-d3.json(
-'data/detected_data.csv',
-function (err, data) {
-if (err) throw err;
-data.features = data.features.map(function (d) {
-d.properties.month = new Date(d.properties.time).getMonth();
-return d;
-});
- 
-map.addSource('detected_data', {
+map.on('load', function () {
+map.loadImage(
+'css/images/frame001.jpg',
+function (error, image) {
+if (error) throw error;
+map.addImage('cat', image);
+map.addSource('point', {
 'type': 'geojson',
-data: data
-});
- 
-map.addLayer({
-'id': 'earthquake-circles',
-'type': 'circle',
-'source': 'earthquakes',
-'paint': {
-'circle-color': [
-'interpolate',
-['linear'],
-['get', 'mag'],
-6,
-'#FCA107',
-8,
-'#7F3121'
-],
-'circle-opacity': 0.75,
-'circle-radius': [
-'interpolate',
-['linear'],
-['get', 'mag'],
-6,
-20,
-8,
-40
+'data': {
+'type': 'FeatureCollection',
+'features': [
+{
+'type': 'Feature',
+'geometry': {
+'type': 'Point',
+'coordinates': [139.825603, 35.898598]
+}
+}
 ]
 }
 });
- 
 map.addLayer({
-'id': 'earthquake-labels',
-'type': 'symbol',
-'source': 'earthquakes',
+"id": "b7",
+'type': 'symbol',	
+'source': 'point',
 'layout': {
-'text-field': [
-'concat',
-['to-string', ['get', 'mag']],
-'m'
-],
-'text-font': [
-'Open Sans Bold',
-'Arial Unicode MS Bold'
-],
-'text-size': 12
-},
-'paint': {
-'text-color': 'rgba(0,0,0,0.5)'
+'icon-image': 'cat',
+'icon-size': 0.035
 }
+});
+}
+);
+map.on('zoomstart', 'b7', function(e) {
+  if (map.getZoom() > 12) {
+    map.setLayoutProperty('b7', 'visibility', 'none');
+  }
+})
+d3.json(
+'https://docs.mapbox.com/mapbox-gl-js/assets/significant-earthquakes-2015.geojson',
+function (err, data) {
+if (err) throw err;
+ 
+// Create a month property value based on time
+// used to filter against.
+data.features = data.features.map(function (d) {
+d.properties.month = new Date(d.properties.time).getMonth();
+return d;
 });
  
 // Set filter to first month of the year

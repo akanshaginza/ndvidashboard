@@ -97,6 +97,68 @@
           height: 500px;
           overflow-y: scroll;
         }
+        #floating-panel {
+        position: absolute;
+        top: 17%;
+        left: 30%;
+        z-index: 5;
+        background-color: #fff;
+        padding: 5px;
+        border: 1px solid #999;
+        text-align: center;
+        font-family: "Roboto", "sans-serif";
+        line-height: 30px;
+        padding-left: 10px;
+      }
+
+      #floating-panel {
+        background-color: #fff;
+        border: 1px solid #999;
+        top: 17%;
+        left: 40%;
+        padding: 5px;
+        position: absolute;
+        z-index: 5;
+      }
+      .map-overlay {
+        font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+        position: absolute;
+        width: 25%;
+        top: 16%;
+        left: 12%;
+        padding: 13px;
+        padding: 10px;
+        z-index: 5;
+      }
+ 
+.map-overlay .map-overlay-inner {
+background-color: #fff;
+box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+border-radius: 3px;
+padding: 10px;
+margin-bottom: 10px;
+}
+ 
+.map-overlay h2 {
+line-height: 24px;
+display: block;
+margin: 0 0 10px;
+}
+ 
+.map-overlay .legend .bar {
+height: 10px;
+width: 100%;
+background: linear-gradient(to right, #fca107, #7f3121);
+}
+ 
+.map-overlay input {
+background-color: transparent;
+display: inline-block;
+width: 100%;
+position: relative;
+margin: 0;
+cursor: ew-resize;
+}
         </style>
         <title></title>
         <script>
@@ -280,6 +342,25 @@
             <input type="checkbox" id="check4" onclick="change3();">
             <label>Quantity Heatmap</label>
         </div> -->
+        <div id="floating-panel">
+          <button onclick="toggleHeatmap()">Toggle Heatmap</button>
+          <button onclick="toggleParanoma()">Toggle Paranoma</button>
+          <button onclick="toggleMarkers()">Toggle Markers</button>
+          <button onclick="togglePath()">Toggle Path</button>
+        </div>
+        <div class="map-overlay top">
+          <div class="map-overlay-inner">
+          <h2></h2>
+          <label id="month"></label>
+          <input id="slider" type="range" min="0" max="11" step="1" value="0" />
+          </div>
+          <div class="map-overlay-inner">
+          <div id="legend" class="legend">
+          <div class="bar"></div>
+          <div>Magnitude (m)</div>
+          </div>
+          </div>
+          </div>
         <div id="map1"></div>
         <div id="myDiv"> 
         </div>
@@ -289,11 +370,11 @@
         </div>
         <div id="myDiv3"> 
         </div>
-        <div class="wrapper">
+        <!-- <div class="wrapper">
         <div id="slider">
           <div class="year"></div>
         </div>
-        </div>
+        </div> -->
         <script src="js/qgis2web_expressions.js"></script>
         <script src="js/leaflet.js"></script>
         <script src="js/leaflet-heat.js"></script>
@@ -306,25 +387,10 @@
         <script src="js/labels.js"></script>
         <script src="data/data_1_1.js"></script>
         <script>
-        // $(document).ready(function () {
-        //    $("#sidebar").mCustomScrollbar({
-        //         theme: "minimal"
-        //     });
-        //     $('#sidebarCollapse').on('click', function () {
-        //         $('#sidebar, #content').toggleClass('active');
-        //         $('.collapse.in').toggleClass('in');
-        //         $('a[aria-expanded=true]').attr('aria-expanded', 'false');
-        //     });
-        // });
-        $('#lane1').click(function(){
-          window.open('paranoma1.html','_blank');
-        });
-        $('#lane2').click(function(){
-          window.open('paranoma2.html','_blank');
-        });
-        $('#lane3').click(function(){
-          window.open('paranoma.html','_blank');
-        });
+        function toggleHeatmap(){
+         
+        }
+
         var img =['css/images/1.jpg','css/images/2.jpg','css/images/3.jpg','css/images/4.jpg','css/images/5.jpg','css/images/6.jpg','css/images/7.jpg','css//images/8.jpg',
         'css/images/9.jpg','css/images/10.jpg','css/images/11.jpg','css/images/12.jpg','css/images/13.jpg','css/images/14.jpg'];
         Plotly.d3.csv("data/detected_data.csv", function(data){ processData(data) } );
@@ -332,7 +398,125 @@
         Plotly.d3.csv("data/detected_data2.csv", function(data){ processData2(data) } );
         Plotly.d3.csv("data/detected_data3.csv", function(data){ processData3(data) } );
         Plotly.d3.csv("data/detected_data4.csv", function(data){ processData4(data) } );
+        Plotly.d3.csv("data/detected_data.csv", function(err, rows){
 
+function filter_and_unpack(rows, key, year) {
+return rows.filter(row => row['year'] == year).map(row => row[key])
+}
+
+var frames = []
+var slider_steps = []
+
+var n = 11;
+var num = 1952;
+for (var i = 0; i <= n; i++) {
+  var z = filter_and_unpack(rows, 'lifeExp', num)
+  var locations = filter_and_unpack(rows, 'iso_alpha', num)
+  frames[i] = {data: [{z: z, locations: locations, text: locations}], name: num}
+  slider_steps.push ({
+      label: num.toString(),
+      method: "animate",
+      args: [[num], {
+          mode: "immediate",
+          transition: {duration: 300},
+          frame: {duration: 300}
+        }
+      ]
+    })
+  num = num + 5
+}
+
+var data = [{
+    type: 'choropleth',
+    locationmode: 'world',
+    locations: frames[0].data[0].locations,
+    z: frames[0].data[0].z,
+    text: frames[0].data[0].locations,
+    zauto: false,
+    zmin: 30,
+    zmax: 90
+
+}];
+var layout = {
+  title: 'World Life Expectency<br>1952 - 2007',
+  geo:{
+     scope: 'world',
+     countrycolor: 'rgb(255, 255, 255)',
+     showland: true,
+     landcolor: 'rgb(217, 217, 217)',
+     showlakes: true,
+     lakecolor: 'rgb(255, 255, 255)',
+     subunitcolor: 'rgb(255, 255, 255)',
+     lonaxis: {},
+     lataxis: {}
+  },
+  updatemenus: [{
+    x: 0.1,
+    y: 0,
+    yanchor: "top",
+    xanchor: "right",
+    showactive: false,
+    direction: "left",
+    type: "buttons",
+    pad: {"t": 87, "r": 10},
+    buttons: [{
+      method: "animate",
+      args: [null, {
+        fromcurrent: true,
+        transition: {
+          duration: 200,
+        },
+        frame: {
+          duration: 500
+        }
+      }],
+      label: "Play"
+    }, {
+      method: "animate",
+      args: [
+        [null],
+        {
+          mode: "immediate",
+          transition: {
+            duration: 0
+          },
+          frame: {
+            duration: 0
+          }
+        }
+      ],
+      label: "Pause"
+    }]
+  }],
+  sliders: [{
+    active: 0,
+    steps: slider_steps,
+    x: 0.1,
+    len: 0.9,
+    xanchor: "left",
+    y: 0,
+    yanchor: "top",
+    pad: {t: 50, b: 10},
+    currentvalue: {
+      visible: true,
+      prefix: "Year:",
+      xanchor: "right",
+      font: {
+        size: 20,
+        color: "#666"
+      }
+    },
+    transition: {
+      duration: 300,
+      easing: "cubic-in-out"
+    }
+  }]
+};
+
+Plotly.newPlot('myDiv', data, layout).then(function() {
+  Plotly.addFrames('myDiv', frames);
+});
+})
 function processData(allRows){
   console.log(allRows);
   var id = [], timestamp = [], temp=[], humidity=[], lat=[], lon=[], co2=[], quantity=[], images=[];
@@ -415,7 +599,6 @@ function processData1(allRows1){
     //makePlotly3(quantity,timestamp);
     //makePlotly2(co2,timestamp);
   $('#week1 #co2').click(function(){
-    alert(abx);
     $('#myDiv3,#myDiv,#myDiv1').hide();
     $('#myDiv2').show();
     makePlotly2(co2,timestamp);
@@ -464,6 +647,7 @@ function processData2(allRows2){
     makePlotly2(co2,timestamp);
     makeHeatmap1(lat,lon,co2);
   }); 
+
   $('#week2 #qty').click(function(){
     $('#myDiv1,#myDiv2,#myDiv').hide();
     $('#myDiv3').show();
@@ -479,14 +663,14 @@ function processData3(allRows3){
     row = allRows3[i];
     id.push( row['id'] );
     timestamp.push( row['timestamp'] );
-    temp.push( row['temp'] ); 
+    temp.push( row['temp'] );  
     humidity.push( row['humidity'] );
     lat.push( row['lat'] );
     lon.push( row['lon'] );
     co2.push( row['co2'] );
     quantity.push( row['quantity'] );
   }
-  console.log( 'X',timestamp, 'Y',co2 );
+  console.log( 'X',timestamp, 'Y',co2 );  
   $('#week3 #temp').click(function(){
     $('#myDiv1,#myDiv2,#myDiv3').hide();
     $('#myDiv').show();
@@ -515,6 +699,29 @@ function processData3(allRows3){
   });
 }
 
+var months = [
+'January',
+'February',
+'March',
+'April',
+'May',
+'June',
+'July',
+'August',
+'September',
+'October',
+'November',
+'December'
+];
+ 
+function filterBy(month) {
+var filters = ['==', 'month', month];
+map.setFilter('', filters);
+map.setFilter('', filters);
+// Set the label to the month
+document.getElementById('month').textContent = months[month];
+}
+
 function processData4(allRows4){
   console.log(allRows4);
   var id = [], timestamp = [], temp=[], humidity=[], lat=[], lon=[], co2=[], quantity=[], images=[];
@@ -524,7 +731,7 @@ function processData4(allRows4){
     timestamp.push( row['timestamp'] );
     temp.push( row['temp'] ); 
     humidity.push( row['humidity'] );
-    lat.push( row['lat'] );
+    lat.push( row['lat'] ); 
     lon.push( row['lon'] );
     co2.push( row['co2'] );
     quantity.push( row['quantity'] );
@@ -532,7 +739,6 @@ function processData4(allRows4){
   console.log( 'X',timestamp, 'Y',co2 );
   $('#month1').click(function(){
     $('#map1').hide();
-   // $('#img').
     $('#myDiv,#myDiv1,#myDiv2,#myDiv3').css('display','inline-block');
     makePlotly(temp,timestamp);
     makePlotly1(co2,timestamp);
@@ -552,7 +758,6 @@ function makePlotly(temp,timestamp){
   }]
   Plotly.newPlot('myDiv', data_1, layout_chart);
   myPlot.on('plotly_click', function(){
-    alert('You clicked this Plotly chart!');
     console.log(data.points[0].x);
   });
 }
@@ -622,7 +827,6 @@ function makeHeatmap(lat,lon,temp){
       ];
       Plotly.newPlot('map1', data, layout, config);
       map1.on('plotly_click', function(){
-       alert('You clicked this Plotly chart!');
        window.open('test2.html','_blank');
       });
 }
@@ -633,7 +837,6 @@ function makeHeatmap1(lat,lon,co2){
       radius: 60, colorbar: {y: 1, yanchor: 'top', len: 0.5},colorscale:'YlGnBu'}];
       Plotly.newPlot('map1', data_co2, layout, config);
       map1.on('plotly_click', function(){
-       alert('You clicked this Plotly chart!');
        window.open('test2.html','_blank');
       });
 }
@@ -644,7 +847,6 @@ var data_humidity = [
       radius: 60, colorbar: {y: 1, yanchor: 'top', len: 0.5},colorscale:'Electric'}];
       Plotly.newPlot('map1', data_humidity, layout, config);
       map1.on('plotly_click', function(){
-       alert('You clicked this Plotly chart!');
        window.open('test2.html','_blank');
       });
 }
@@ -655,14 +857,19 @@ function makeHeatmap3(lat,lon,quantity){
       radius: 60, colorbar: {y: 1, yanchor: 'top', len: 0.5},colorscale:'Viridis'}];
       Plotly.newPlot('map1', data_qty, layout, config);
       map1.on('plotly_click', function(){
-       alert('You clicked this Plotly chart!');
        window.open('test2.html','_blank');
       });
 }
         
-var layout = {mapbox: {style: 'streets', center: {lat: 36.12073400669619,lon: 139.21555254377927}, zoom:19}, width: 1200, height: 600};
+var layout = {mapbox: {style: 'mapbox://styles/mapbox/satellite-v9', center: {lat: 36.12073400669619,lon: 139.21555254377927}, zoom:19}, width: 1200, height: 600};
 var config = {mapboxAccessToken: "pk.eyJ1IjoiY2llbG9naW56YWZhcm0iLCJhIjoiY2tnMGczbjIyMGQwMTJybGI4MGJsNTBzbSJ9.pPLT9Q2Kj_dUVW7BAqAyHw"};
-        
+    
+filterBy(0);
+document.getElementById('slider').addEventListener('input', function (e) {
+var month = parseInt(e.target.value, 10);
+filterBy(month);
+});
+
         </script>
     </body>
 </html>
